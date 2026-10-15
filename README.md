@@ -250,8 +250,7 @@ ordering because only one row is ever locked.
 On top of that, a small **per-account group commit** (`accounting/coordinator.ts`) decides requests that queued up while a
 transaction was running in the *same* transaction. It never delays a lone request, and never changes a decision.
 
-Measured on a deliberately small machine (1 vCPU shared by load generator, service and PostgreSQL): one hot account
-**~11x** on one hot account from batching (237 -> 2,628 req/s in the final back-to-back measurement), plus +35% from a query-plan fix found by profiling, with all invariants verified after each run (no over-spend,
+Measured on a deliberately small machine (1 vCPU shared by load generator, service and PostgreSQL): **~11x** on one hot account from batching (237 -> 2,628 req/s in the final back-to-back measurement), plus +35% from a query-plan fix found by profiling, with all invariants verified after each run (no over-spend,
 every rejection justified, idempotency exact, consistent while plans change). Method, results, what did *not* help, and
 the remaining weak spot are in [docs/PERFORMANCE.md](docs/PERFORMANCE.md). Reproduce with
 `docker compose --profile loadtest run --rm loadtest`.
