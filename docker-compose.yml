@@ -1,0 +1,82 @@
+# Start everything:   docker compose up --build
+#   quota service  http://localhost:3000     example client (web)  http://localhost:8080
+# Tests:              docker compose --profile test run --rm tests
+# Load test:          docker compose --profile loadtest run --rm loadtest
+name: usage-metering
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: quota
+      POSTGRES_PASSWORD: quota
+      POSTGRES_DB: quota
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quota -d quota"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  service:
+    build: ./service
+    environment:
+      DATABASE_URL: postgres://quota:quota@postgres:5432/quota
+      PORT: "3000"
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # Optional: when set, POST /v1/accounts requires the header  X-Admin-Token: <value>
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      BATCH_MAX: ${BATCH_MAX:-64}
+      DB_POOL_MAX: ${DB_POOL_MAX:-20}
+      DB_SYNCHRONOUS_COMMIT: ${DB_SYNCHRONOUS_COMMIT:-on}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  client:
+    build: ./client
+    environment:
+      SERVICE_URL: http://service:3000
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - client-data:/data
+    depends_on:
+      service:
+        condition: service_healthy
+
+  tests:
+    profiles: ["test"]
+    build:
+      context: ./service
+      target: test
+    environment:
+      DATABASE_URL: postgres://quota:quota@postgres:5432/quota
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  loadtest:
+    profiles: ["loadtest"]
+    build: ./loadtest
+    environment:
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    volumes:
+      - ./loadtest/results:/app/results
+    depends_on:
+      service:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  client-data:

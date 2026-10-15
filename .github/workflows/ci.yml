@@ -1,0 +1,22 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env: { POSTGRES_USER: quota, POSTGRES_PASSWORD: quota, POSTGRES_DB: quota }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U quota" --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgres://quota:quota@localhost:5432/quota
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: "*/package-lock.json" }
+      - run: npm ci && npm run typecheck && npm test
+        working-directory: service
+      - run: npm ci && npm run build
+        working-directory: client
