@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagewise · document desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Pagewise</h1>
+      <p class="sub">Document processing for <strong id="account-name">…</strong>. Every document asks the quota service for units first.</p>
+    </div>
+    <button id="reset" class="quiet" title="Create a fresh demo account with zero usage">Reset demo data</button>
+  </header>
+
+  <main>
+    <section class="panel" aria-labelledby="h-allow">
+      <h2 id="h-allow">Allowances this month <span id="month" class="muted"></span></h2>
+      <div id="allowances" aria-live="polite"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-process">
+      <h2 id="h-process">Process a document</h2>
+      <form id="process-form" class="row">
+        <label>Who is processing it
+          <select id="user"></select>
+        </label>
+        <label>Pages (units)
+          <input id="units" type="number" min="1" step="1" value="8" required>
+        </label>
+        <button type="submit" class="primary">Process document</button>
+      </form>
+      <div class="row">
+        <button id="retry" class="quiet" disabled>Send the last request again (simulated timeout retry)</button>
+      </div>
+      <div id="slip" class="slip-empty">The decision appears here as a slip.</div>
+    </section>
+
+    <section class="panel wide" aria-labelledby="h-plans">
+      <h2 id="h-plans">Plans and limits <span class="muted">changes apply to the next request, no redeploy</span></h2>
+      <div id="plans"></div>
+    </section>
+
+    <section class="panel wide" aria-labelledby="h-history">
+      <h2 id="h-history">Recent decisions</h2>
+      <div class="scroll"><table id="history"><thead><tr><th>Request</th><th>User</th><th>Units</th><th>Result</th><th>Why</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <section class="panel wide" aria-labelledby="h-demo">
+      <h2 id="h-demo">Guided demo</h2>
+      <p class="muted">Runs a scripted story on a separate, fresh account: an accepted action, a user-limit rejection, an account-limit rejection, a safe retry, then plan changes. The same story runs in a terminal with <code>npm run demo</code>.</p>
+      <button id="run-demo" class="primary">Run guided demo</button>
+      <ol id="demo-steps" class="steps"></ol>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
