@@ -24,7 +24,8 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   const app = Fastify({
     logger: config.logLevel === 'silent' ? false : { level: config.logLevel },
     bodyLimit: 64 * 1024,
-    maxParamLength: 256, // ids may be up to 128 chars (Fastify's default limit is 100); longer ones get a clean 400
+    // ids may be up to 128 chars (Fastify's default path-param limit is 100); longer ones get a clean 400
+    routerOptions: { maxParamLength: 256 },
   });
   const ctx: AppContext = { pool, config, clock, coordinator: new ConsumeCoordinator(pool, clock, config.batchMax) };
 
