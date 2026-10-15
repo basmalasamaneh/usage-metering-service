@@ -142,3 +142,19 @@ npx tsx src/load.ts --scenario all --duration 8 --concurrency 64 --label d-batch
 Options: `--scenario spread,hot,exhaust,storm,churn|all`, `--duration <s>`, `--concurrency <n>`, `--url`, `--label`, `--out`.
 The service exposes `GET /stats` (batches, average and maximum batch size, pool usage) which the harness reads
 to report batch sizes.
+
+## A run on the delivered Docker stack (`loadtest/results/compose.json`)
+
+The full stack was also load-tested through `docker compose --profile loadtest run --rm loadtest`
+on a Windows machine with WSL2 and Docker Desktop (64 clients, 10 s per scenario, defaults:
+`BATCH_MAX=64`, `synchronous_commit=on`):
+
+| spread | hot | exhaust | storm | churn |
+|---|---|---|---|---|
+| 136 | 423 | 616 | 237 | 541 |
+
+Every scenario finished `consistent` with 0 errors, so the correctness checks (no over-spend, idempotency,
+consistency while plans change) hold on this stack too. Throughput is lower than in the sections above,
+which were measured on a different machine natively. The cause was not investigated (storage, CPU and the
+Docker/WSL2 virtualisation layer all differ), so this run is evidence of correctness and of the compose
+setup working end to end, not a like-for-like performance comparison.
