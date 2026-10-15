@@ -19,7 +19,7 @@ docker compose up --build
 
 Contents: [Quick start](#quick-start) · [Concepts](#concepts) · [How plans are applied](#how-plans-are-applied) ·
 [API](#api) · [Plan changes](#plan-changes) · [Retries and idempotency](#retries-and-idempotency) ·
-[Concurrency and performance](#concurrency-and-performance) · [Example client](#example-client) · [Tests](#tests) ·
+[Concurrency and performance](#concurrency-and-performance) · [Main design decisions](#main-design-decisions) · [Example client](#example-client) · [Tests](#tests) ·
 [Product assumptions](#product-assumptions) · [Known limitations](#known-limitations) · [Code map](#code-map)
 
 More: [docs/DESIGN.md](docs/DESIGN.md) (schema, request trace, trade-offs) ·
@@ -257,6 +257,18 @@ the remaining weak spot are in [docs/PERFORMANCE.md](docs/PERFORMANCE.md). Repro
 `docker compose --profile loadtest run --rm loadtest`.
 
 ---
+
+## Main design decisions
+
+Full reasoning, alternatives and a request trace are in [docs/DESIGN.md](docs/DESIGN.md). The short version:
+
+1. **PostgreSQL is the single source of truth, and one row lock is the whole concurrency story.** Every consume locks the account row, then reads, decides and writes in one transaction. This makes the account counter, every user counter and the idempotency check exact, also across several service instances, with no deadlock-prone lock ordering. Rejected alternatives: SERIALIZABLE with retries (aborts pile up on exactly the hot case), Redis counters (a second source of truth), per-instance unit leases (not exact at the boundary).
+2. **Counters are separate from plans.** Usage belongs to (owner, UTC month), never to a plan. That is why switching plans keeps usage, a new month starts at zero, and plan edits cannot corrupt accounting. Plans are read at decision time and never cached, so changes apply to the next request without a redeploy.
+3. **Rules are pure functions** (`domain/rules.ts`) evaluated in memory over a snapshot; accounting, rules and HTTP handling are separate layers. A request must satisfy every rule at both levels, and all violated rules are reported.
+4. **Every decision is stored with a snapshot** of the plans, limits and balances in force, in an append-only log that doubles as the idempotency table. History never changes when plans do.
+5. **Per-account group commit** decides requests that queued up during a transaction in the next one. It is an optimisation only: a lone request is never delayed and decisions are identical (the concurrency tests run with it on and off).
+6. **Integrity is enforced in the schema too:** composite foreign keys keep account plans on accounts and user plans on users; CHECK constraints keep months and counters valid; the idempotency key is a single-column unique index chosen after profiling showed the planner mis-planning the two-column form.
+7. **Scope kept deliberately small:** no extra rule types, no key rotation, no rate limiting. A correct, well-tested core with documented limits over unfinished extras.
 
 ## Example client
 
