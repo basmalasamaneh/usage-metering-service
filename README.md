@@ -340,7 +340,7 @@ The brief leaves these open. Each is a deliberate choice, applied consistently:
 * The allowance recorded for a closed month is the one in force at its **last accepted request**; an edit made later in that month without further consumption is not reflected.
 * A hot account is limited by a single lock by design (a shared allowance is a single counter); sharding the counter into leases would raise it at the cost of strict exactness.
 * Only monthly UTC periods; no other windows (daily, rolling) or resource types. Billing/payments/refunds/roles are out of scope per the brief.
-* Docker could not be run where this was authored: the Dockerfiles were validated by performing their exact steps natively (`npm ci`, build, production-only install, run), the Compose file was parsed, and the stack was exercised natively against PostgreSQL 16. Please run `docker compose up --build` once; if anything differs, that is the first place to look.
+- The Compose stack was verified on Windows with WSL2 and Docker Desktop: `docker compose up --build`, the web scenario, the CLI demo, the API/key/isolation checks, the test profile (96 passed), the load-test profile (all scenarios consistent), and a fresh start after `docker compose down -v`. Before that, the Dockerfiles had been validated by running their exact steps natively.
 
 ## Code map
 
