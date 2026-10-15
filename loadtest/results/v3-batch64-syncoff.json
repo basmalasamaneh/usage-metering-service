@@ -1,0 +1,62 @@
+{
+  "label": "v3-batch64-syncoff",
+  "url": "http://localhost:3000",
+  "concurrency": 64,
+  "durationS": 8,
+  "at": "2026-10-13T21:36:59.162Z",
+  "server": {
+    "consume": {
+      "batches": 3732,
+      "requests": 42959,
+      "maxBatchSize": 63,
+      "avgBatchSize": 11.51,
+      "failedBatches": 0,
+      "isolatedRetries": 0
+    },
+    "pool": {
+      "total": 20,
+      "idle": 20,
+      "waiting": 0
+    }
+  },
+  "results": [
+    {
+      "scenario": "spread",
+      "stats": {
+        "count": 4820,
+        "errors": 0,
+        "rps": 599,
+        "p50": 100.51,
+        "p95": 158.9,
+        "p99": 196.08,
+        "max": 916.93,
+        "elapsedS": 8.05
+      },
+      "extra": {
+        "note": "20 accounts x 10 users",
+        "avgBatchSize": 1.9,
+        "maxBatchSize": 11
+      },
+      "problems": []
+    },
+    {
+      "scenario": "hot",
+      "stats": {
+        "count": 38139,
+        "errors": 0,
+        "rps": 4762,
+        "p50": 12.48,
+        "p95": 19.07,
+        "p99": 27.52,
+        "max": 59.62,
+        "elapsedS": 8.01
+      },
+      "extra": {
+        "note": "1 account x 50 users",
+        "avgBatchSize": 31.81,
+        "maxBatchSize": 63
+      },
+      "problems": []
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "usage-metering-loadtest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Load and correctness tests for the usage metering service (HTTP only)",
+  "scripts": {
+    "start": "tsx src/load.ts",
+    "all": "tsx src/load.ts --scenario all"
+  },
+  "dependencies": {
+    "undici": "^6.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

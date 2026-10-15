@@ -1,0 +1,125 @@
+{
+  "label": "v4-batch64",
+  "url": "http://localhost:3000",
+  "concurrency": 64,
+  "durationS": 8,
+  "at": "2026-10-14T08:36:22.405Z",
+  "server": {
+    "consume": {
+      "batches": 4492,
+      "requests": 93633,
+      "maxBatchSize": 64,
+      "avgBatchSize": 20.84,
+      "failedBatches": 0,
+      "isolatedRetries": 0
+    },
+    "pool": {
+      "total": 2,
+      "idle": 2,
+      "waiting": 0
+    }
+  },
+  "results": [
+    {
+      "scenario": "spread",
+      "stats": {
+        "count": 3429,
+        "errors": 0,
+        "rps": 424,
+        "p50": 139.39,
+        "p95": 234.57,
+        "p99": 380.53,
+        "max": 1005.1,
+        "elapsedS": 8.09
+      },
+      "extra": {
+        "note": "20 accounts x 10 users",
+        "avgBatchSize": 1.95,
+        "maxBatchSize": 12
+      },
+      "problems": []
+    },
+    {
+      "scenario": "hot",
+      "stats": {
+        "count": 21058,
+        "errors": 0,
+        "rps": 2628,
+        "p50": 21.7,
+        "p95": 39.22,
+        "p99": 69.86,
+        "max": 90.93,
+        "elapsedS": 8.01
+      },
+      "extra": {
+        "note": "1 account x 50 users",
+        "avgBatchSize": 31.81,
+        "maxBatchSize": 63
+      },
+      "problems": []
+    },
+    {
+      "scenario": "exhaust",
+      "stats": {
+        "count": 15000,
+        "errors": 0,
+        "rps": 2683,
+        "p50": 21.81,
+        "p95": 34.71,
+        "p99": 43.91,
+        "max": 53.06,
+        "elapsedS": 5.59
+      },
+      "extra": {
+        "note": "15,000 requests, allowance 20,000",
+        "avgBatchSize": 31.71,
+        "maxBatchSize": 63,
+        "acceptedUnits": 20000,
+        "allowance": 20000
+      },
+      "problems": []
+    },
+    {
+      "scenario": "storm",
+      "stats": {
+        "count": 11062,
+        "errors": 0,
+        "rps": 1375,
+        "p50": 44.84,
+        "p95": 65.16,
+        "p99": 73.86,
+        "max": 93.2,
+        "elapsedS": 8.04
+      },
+      "extra": {
+        "note": "each request sent 3x concurrently",
+        "avgBatchSize": 35.46,
+        "maxBatchSize": 64,
+        "httpRequests": 33186,
+        "logicalRequests": 11062,
+        "replays": 22124
+      },
+      "problems": []
+    },
+    {
+      "scenario": "churn",
+      "stats": {
+        "count": 20960,
+        "errors": 0,
+        "rps": 2601,
+        "p50": 22.22,
+        "p95": 37.3,
+        "p99": 52.61,
+        "max": 82.24,
+        "elapsedS": 8.06
+      },
+      "extra": {
+        "note": "hot account, plan edited every ~20ms",
+        "avgBatchSize": 31.76,
+        "maxBatchSize": 64,
+        "planEdits": 256
+      },
+      "problems": []
+    }
+  ]
+}
